@@ -29,6 +29,18 @@
     .time {
       font-weight: bold;
     }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -36,15 +48,24 @@
   <div class="container">
     <div class="time-slot">
       <span class="time">8:00 AM</span>
-      <p>Wake up</p>
+      <div class="input-group">
+        <input type="text" placeholder="Activity">
+        <button>Add</button>
+      </div>
     </div>
     <div class="time-slot">
       <span class="time">9:00 AM</span>
-      <p>Breakfast</p>
+      <div class="input-group">
+        <input type="text" placeholder="Activity">
+        <button>Add</button>
+      </div>
     </div>
     <div class="time-slot">
       <span class="time">10:00 AM</span>
-      <p>Work/Study</p>
+      <div class="input-group">
+        <input type="text" placeholder="Activity">
+        <button>Add</button>
+      </div>
     </div>
   </div>
 </body>
