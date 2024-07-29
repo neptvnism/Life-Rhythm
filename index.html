@@ -49,24 +49,41 @@
     <div class="time-slot">
       <span class="time">8:00 AM</span>
       <div class="input-group">
-        <input type="text" placeholder="Activity">
-        <button>Add</button>
+        <input type="text" id="activity-8am" placeholder="Activity">
+        <button onclick="addActivity('8am')">Add</button>
       </div>
+      <ul id="activities-8am"></ul>
     </div>
     <div class="time-slot">
       <span class="time">9:00 AM</span>
       <div class="input-group">
-        <input type="text" placeholder="Activity">
-        <button>Add</button>
+        <input type="text" id="activity-9am" placeholder="Activity">
+        <button onclick="addActivity('9am')">Add</button>
       </div>
+      <ul id="activities-9am"></ul>
     </div>
     <div class="time-slot">
       <span class="time">10:00 AM</span>
       <div class="input-group">
-        <input type="text" placeholder="Activity">
-        <button>Add</button>
+        <input type="text" id="activity-10am" placeholder="Activity">
+        <button onclick="addActivity('10am')">Add</button>
       </div>
+      <ul id="activities-10am"></ul>
     </div>
   </div>
+  <script>
+    function addActivity(time) {
+      const activityInput = document.getElementById(`activity-${time}`);
+      const activityList = document.getElementById(`activities-${time}`);
+      const newActivity = activityInput.value;
+
+      if (newActivity !== "") {
+        const listItem = document.createElement("li");
+        listItem.textContent = newActivity;
+        activityList.appendChild(listItem);
+        activityInput.value = "";
+      }
+    }
+  </script>
 </body>
 </html>
