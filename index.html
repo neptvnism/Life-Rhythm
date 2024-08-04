@@ -28,6 +28,15 @@
       border-radius: 5px;
       background-color: #fff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .time-slot.work {
+      background-color: #f0f0f0;
+    }
+
+    .time-slot.break {
+      background-color: #e0ffff;
     }
 
     .time {
@@ -115,40 +124,40 @@
 <body>
   <h1>My Daily Routine</h1>
   <div class="container">
-    <div class="time-slot" id="timeSlot-8am">
-      <span class="time">8:00 AM</span>
+    <div class="time-slot work" id="timeSlot-8am">
+      <span class="time" id="time-8am">8:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-8am" placeholder="Activity">
         <button onclick="addActivity('8am')">Add</button>
       </div>
       <ul id="activities-8am"></ul>
     </div>
-    <div class="time-slot" id="timeSlot-9am">
-      <span class="time">9:00 AM</span>
+    <div class="time-slot break" id="timeSlot-9am">
+      <span class="time" id="time-9am">9:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-9am" placeholder="Activity">
         <button onclick="addActivity('9am')">Add</button>
       </div>
       <ul id="activities-9am"></ul>
     </div>
-    <div class="time-slot" id="timeSlot-10am">
-      <span class="time">10:00 AM</span>
+    <div class="time-slot work" id="timeSlot-10am">
+      <span class="time" id="time-10am">10:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-10am" placeholder="Activity">
         <button onclick="addActivity('10am')">Add</button>
       </div>
       <ul id="activities-10am"></ul>
     </div>
-    <div class="time-slot" id="timeSlot-11am">
-      <span class="time">11:00 AM</span>
+    <div class="time-slot break" id="timeSlot-11am">
+      <span class="time" id="time-11am">11:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-11am" placeholder="Activity">
         <button onclick="addActivity('11am')">Add</button>
       </div>
       <ul id="activities-11am"></ul>
     </div>
-    <div class="time-slot" id="timeSlot-12pm">
-      <span class="time">12:00 PM</span>
+    <div class="time-slot work" id="timeSlot-12pm">
+      <span class="time" id="time-12pm">12:00 PM</span>
       <div class="input-group">
         <input type="text" id="activity-12pm" placeholder="Activity">
         <button onclick="addActivity('12pm')">Add</button>
@@ -189,7 +198,7 @@
       newTimeSlot.classList.add("time-slot");
       newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
       newTimeSlot.innerHTML = `
-        <span class="time">Time Slot ${timeSlotCounter}</span>
+        <span class="time" id="time-${timeSlotCounter}">Time Slot ${timeSlotCounter}</span>
         <div class="input-group">
           <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
           <button onclick="addActivity('${timeSlotCounter}')">Add</button>
@@ -199,6 +208,13 @@
       const container = document.querySelector(".container");
       container.insertBefore(newTimeSlot, container.lastElementChild);
       saveActivities();
+
+      // Make the time editable
+      const timeSpan = newTimeSlot.querySelector('.time');
+      timeSpan.contentEditable = true;
+      timeSpan.addEventListener('blur', () => {
+        saveActivities(); // Save the updated time when focus is lost
+      });
     }
 
     function saveActivities() {
