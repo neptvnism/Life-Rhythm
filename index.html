@@ -60,6 +60,21 @@
 
     li {
       margin-bottom: 5px;
+      position: relative;
+    }
+
+    li button {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -90,6 +105,22 @@
       </div>
       <ul id="activities-10am"></ul>
     </div>
+    <div class="time-slot">
+      <span class="time">11:00 AM</span>
+      <div class="input-group">
+        <input type="text" id="activity-11am" placeholder="Activity">
+        <button onclick="addActivity('11am')">Add</button>
+      </div>
+      <ul id="activities-11am"></ul>
+    </div>
+    <div class="time-slot">
+      <span class="time">12:00 PM</span>
+      <div class="input-group">
+        <input type="text" id="activity-12pm" placeholder="Activity">
+        <button onclick="addActivity('12pm')">Add</button>
+      </div>
+      <ul id="activities-12pm"></ul>
+    </div>
   </div>
   <script>
     function addActivity(time) {
@@ -100,6 +131,12 @@
       if (newActivity !== "") {
         const listItem = document.createElement("li");
         listItem.textContent = newActivity;
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener('click', () => {
+          activityList.removeChild(listItem);
+        });
+        listItem.appendChild(deleteButton);
         activityList.appendChild(listItem);
         activityInput.value = "";
       }
