@@ -4,14 +4,16 @@
   <title>Routine Planner</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 20px;
+      background-color: #f2f2f2;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      color: #333;
     }
 
     .container {
@@ -24,17 +26,20 @@
       border: 1px solid #ccc;
       padding: 10px;
       border-radius: 5px;
-      background-color: #f8f8f8;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .time {
       font-weight: bold;
       margin-bottom: 10px;
+      color: #333;
     }
 
     .input-group {
       display: flex;
       gap: 10px;
+      align-items: center;
     }
 
     .input-group input {
@@ -51,6 +56,11 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .input-group button:hover {
+      background-color: #0056b3;
     }
 
     ul {
@@ -75,13 +85,37 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 12px;
+      transition: background-color 0.3s;
+    }
+
+    li button:hover {
+      background-color: #c82333;
+    }
+
+    .add-time-slot {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .add-time-slot button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .add-time-slot button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <h1>My Daily Routine</h1>
   <div class="container">
-    <div class="time-slot">
+    <div class="time-slot" id="timeSlot-8am">
       <span class="time">8:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-8am" placeholder="Activity">
@@ -89,7 +123,7 @@
       </div>
       <ul id="activities-8am"></ul>
     </div>
-    <div class="time-slot">
+    <div class="time-slot" id="timeSlot-9am">
       <span class="time">9:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-9am" placeholder="Activity">
@@ -97,7 +131,7 @@
       </div>
       <ul id="activities-9am"></ul>
     </div>
-    <div class="time-slot">
+    <div class="time-slot" id="timeSlot-10am">
       <span class="time">10:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-10am" placeholder="Activity">
@@ -105,7 +139,7 @@
       </div>
       <ul id="activities-10am"></ul>
     </div>
-    <div class="time-slot">
+    <div class="time-slot" id="timeSlot-11am">
       <span class="time">11:00 AM</span>
       <div class="input-group">
         <input type="text" id="activity-11am" placeholder="Activity">
@@ -113,7 +147,7 @@
       </div>
       <ul id="activities-11am"></ul>
     </div>
-    <div class="time-slot">
+    <div class="time-slot" id="timeSlot-12pm">
       <span class="time">12:00 PM</span>
       <div class="input-group">
         <input type="text" id="activity-12pm" placeholder="Activity">
@@ -121,8 +155,13 @@
       </div>
       <ul id="activities-12pm"></ul>
     </div>
+    <div class="add-time-slot">
+      <button onclick="addTimeSlot()">Add Time Slot</button>
+    </div>
   </div>
   <script>
+    let timeSlotCounter = 5; // Keep track of time slot IDs
+
     function addActivity(time) {
       const activityInput = document.getElementById(`activity-${time}`);
       const activityList = document.getElementById(`activities-${time}`);
@@ -135,12 +174,67 @@
         deleteButton.textContent = "Delete";
         deleteButton.addEventListener('click', () => {
           activityList.removeChild(listItem);
+          saveActivities();
         });
         listItem.appendChild(deleteButton);
         activityList.appendChild(listItem);
         activityInput.value = "";
+        saveActivities();
       }
     }
+
+    function addTimeSlot() {
+      timeSlotCounter++;
+      const newTimeSlot = document.createElement("div");
+      newTimeSlot.classList.add("time-slot");
+      newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
+      newTimeSlot.innerHTML = `
+        <span class="time">Time Slot ${timeSlotCounter}</span>
+        <div class="input-group">
+          <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
+          <button onclick="addActivity('${timeSlotCounter}')">Add</button>
+        </div>
+        <ul id="activities-${timeSlotCounter}"></ul>
+      `;
+      const container = document.querySelector(".container");
+      container.insertBefore(newTimeSlot, container.lastElementChild);
+      saveActivities();
+    }
+
+    function saveActivities() {
+      const activities = {};
+      const timeSlots = ['8am', '9am', '10am', '11am', '12pm'];
+      timeSlots.forEach(time => {
+        const activityList = document.getElementById(`activities-${time}`);
+        activities[time] = Array.from(activityList.children).map(item => item.textContent);
+      });
+      localStorage.setItem('routine', JSON.stringify(activities));
+    }
+
+    function loadActivities() {
+      const storedActivities = JSON.parse(localStorage.getItem('routine'));
+      if (storedActivities) {
+        const timeSlots = ['8am', '9am', '10am', '11am', '12pm'];
+        timeSlots.forEach(time => {
+          const activityList = document.getElementById(`activities-${time}`);
+          storedActivities[time].forEach(activity => {
+            const listItem = document.createElement("li");
+            listItem.textContent = activity;
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.addEventListener('click', () => {
+              activityList.removeChild(listItem);
+              saveActivities();
+            });
+            listItem.appendChild(deleteButton);
+            activityList.appendChild(listItem);
+          });
+        });
+      }
+    }
+
+    // Load activities on page load
+    loadActivities();
   </script>
 </body>
 </html>
