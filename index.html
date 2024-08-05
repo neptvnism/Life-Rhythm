@@ -13,7 +13,7 @@
     }
 
     body {
-      font-family: sans-serif;
+      font-family: 'Arial Rounded', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -21,12 +21,46 @@
       height: 100%;
       margin: 0;
       background-color: #f0f0f0;
+      transition: background-color 0.3s;
     }
 
     h1 {
       margin-bottom: 20px;
       text-align: center;
       color: #333;
+    }
+
+    .settings-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+
+    .settings-menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      width: 200px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      z-index: 100;
+    }
+
+    .settings-menu select,
+    .settings-menu input[type="range"],
+    .settings-menu button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: 'Arial Rounded', sans-serif;
     }
 
     .container {
@@ -44,13 +78,13 @@
     .time-slot {
       display: flex;
       flex-direction: column;
-      padding: 20px; /* Added more padding around text */
+      padding: 20px;
       margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 10px;
       background-color: white;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      position: relative; /* To position the color input and delete button */
+      position: relative;
     }
 
     .time-slot input[type="color"] {
@@ -58,7 +92,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      cursor: pointer; /* Add cursor pointer for hover */
+      cursor: pointer;
     }
 
     .time-slot input[type="color"].show {
@@ -80,6 +114,7 @@
       border: 1px solid #ccc;
       border-radius: 3px;
       flex-grow: 1;
+      font-family: 'Arial Rounded', sans-serif;
     }
 
     .input-group button {
@@ -89,6 +124,7 @@
       background-color: #4CAF50;
       color: white;
       cursor: pointer;
+      font-family: 'Arial Rounded', sans-serif;
     }
 
     ul {
@@ -102,7 +138,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px; /* Added more padding around text */
+      padding: 10px;
       margin-bottom: 5px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -121,7 +157,17 @@
       background-color: #f44336;
       color: white;
       cursor: pointer;
-      font-size: 1.2em; /* Make the icon a bit larger */
+      font-size: 1.2em;
+      font-family: 'Arial Rounded', sans-serif;
+      display: none;
+    }
+
+    li button.complete {
+      background-color: #4CAF50;
+    }
+
+    li:hover button {
+      display: block;
     }
 
     .add-time-slot {
@@ -138,21 +184,24 @@
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-family: 'Arial Rounded', sans-serif;
     }
 
-    /* Delete buttons initially hidden */
-    li button,
     .time-slot button {
       display: none;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 20px;
+      background-color: #f44336;
+      color: white;
+      cursor: pointer;
+      font-family: 'Arial Rounded', sans-serif;
     }
 
-    /* Show delete buttons on hover */
-    li:hover button,
     .time-slot:hover button {
       display: block;
     }
 
-    /* Show input group on hover */
     .time-slot:hover .input-group {
       display: flex;
     }
@@ -160,6 +209,23 @@
 </head>
 
 <body>
+  <i class="fa fa-cog settings-icon" onclick="toggleSettingsMenu()"></i>
+  <div class="settings-menu" id="settingsMenu">
+    <select id="fontSelect" onchange="changeFont()">
+      <option value="'Arial Rounded', sans-serif">Arial Rounded</option>
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="'Courier New', monospace">Courier New</option>
+      <option value="'Georgia', serif">Georgia</option>
+      <option value="'Lucida Console', monospace">Lucida Console</option>
+      <option value="'Tahoma', sans-serif">Tahoma</option>
+      <option value="'Times New Roman', serif">Times New Roman</option>
+      <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+      <option value="'Verdana', sans-serif">Verdana</option>
+      <option value="'Comic Sans MS', sans-serif">Comic Sans MS</option>
+    </select>
+    <input type="range" id="fontSizeRange" min="12" max="24" value="16" onchange="changeFontSize()">
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  </div>
   <h1>My Daily Routine</h1>
   <div class="container">
     <div class="time-slot work" id="timeSlot-8am">
@@ -178,7 +244,7 @@
   </div>
 
   <script>
-    let timeSlotCounter = 5; // Keep track of time slot IDs
+    let timeSlotCounter = 5;
 
     document.addEventListener("click", function (event) {
       const colorPickers = document.querySelectorAll('input[type="color"]');
@@ -198,83 +264,87 @@
         const newActivity = document.createElement("li");
         newActivity.innerHTML = `
           <span>${activity}</span>
-          <button onclick="deleteActivity(this)"><i class="fas fa-trash"></i></button>
+          <button class="complete" onclick="completeActivity(this)"><i class="fa fa-check"></i></button>
+          <button onclick="deleteActivity(this)"><i class="fa fa-trash"></i></button>
         `;
         activitiesList.appendChild(newActivity);
-        if (!activityValue) {
-          activityInput.value = ""; // Clear the input field if not loading from storage
-        }
+        activityInput.value = "";
         saveActivities();
       }
     }
 
+    function completeActivity(button) {
+      const activityItem = button.parentNode;
+      activityItem.style.textDecoration = "line-through";
+      saveActivities();
+    }
+
     function deleteActivity(button) {
-      const activityItem = button.parentElement;
+      const activityItem = button.parentNode;
       activityItem.remove();
       saveActivities();
     }
 
     function addTimeSlot() {
-      timeSlotCounter++;
-      const newTimeSlot = document.createElement("div");
-      newTimeSlot.classList.add("time-slot");
-      newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
-      newTimeSlot.innerHTML = `
-        <span class="time" id="time-${timeSlotCounter}" contenteditable="true">Time Slot ${timeSlotCounter}</span>
-        <input type="color" id="color-${timeSlotCounter}" onchange="changeSlotColor('${timeSlotCounter}')" value="#ffffff">
-        <div class="input-group">
-          <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
-          <button onclick="addActivity('${timeSlotCounter}')">Add</button>
-        </div>
-        <ul id="activities-${timeSlotCounter}"></ul>
-        <button onclick="deleteTimeSlot('${timeSlotCounter}')">Delete Time Slot</button>
-      `;
-
-      newTimeSlot.style.backgroundColor = "white"; // Default background color to white
-
       const container = document.querySelector(".container");
-      container.insertBefore(newTimeSlot, container.lastElementChild);
-      saveActivities();
-    }
+      const newTimeSlot = document.createElement("div");
+      const time = `timeSlot-${timeSlotCounter}`;
 
-    function changeSlotColor(time) {
-      const timeSlot = document.getElementById(`timeSlot-${time}`);
-      const colorInput = document.getElementById(`color-${time}`);
-      timeSlot.style.backgroundColor = colorInput.value;
-      saveActivities();
+      newTimeSlot.className = "time-slot";
+      newTimeSlot.id = time;
+      newTimeSlot.innerHTML = `
+        <span class="time" id="time-${time}">New Time Slot</span>
+        <input type="color" id="color-${time}" onchange="changeSlotColor('${time}')" value="#ffffff">
+        <div class="input-group">
+          <input type="text" id="activity-${time}" placeholder="Activity">
+          <button onclick="addActivity('${time}')">Add</button>
+        </div>
+        <ul id="activities-${time}"></ul>
+        <button onclick="deleteTimeSlot('${time}')">Delete Time Slot</button>
+      `;
+      container.insertBefore(newTimeSlot, container.querySelector(".add-time-slot"));
+      timeSlotCounter++;
     }
 
     function deleteTimeSlot(time) {
-      const timeSlot = document.getElementById(`timeSlot-${time}`);
+      const timeSlot = document.getElementById(time);
       timeSlot.remove();
       saveActivities();
     }
 
+    function changeSlotColor(time) {
+      const colorPicker = document.getElementById(`color-${time}`);
+      const timeSlot = document.getElementById(time);
+      timeSlot.style.backgroundColor = colorPicker.value;
+      saveActivities();
+    }
+
     function saveActivities() {
-      const activitiesData = {};
       const timeSlots = document.querySelectorAll(".time-slot");
+      const savedActivities = {};
 
       timeSlots.forEach(timeSlot => {
         const time = timeSlot.id.replace("timeSlot-", "");
-        activitiesData[time] = {
-          color: document.getElementById(`color-${time}`).value,
-          activities: Array.from(timeSlot.querySelector("ul").children).map(li => li.textContent.trim())
+        const activities = Array.from(timeSlot.querySelectorAll("li span")).map(span => span.textContent);
+        const color = timeSlot.style.backgroundColor;
+
+        savedActivities[time] = {
+          color: color,
+          activities: activities
         };
       });
 
-      localStorage.setItem("routineActivities", JSON.stringify(activitiesData));
+      localStorage.setItem("savedActivities", JSON.stringify(savedActivities));
     }
 
     function loadActivities() {
-      const savedActivities = JSON.parse(localStorage.getItem("routineActivities"));
+      const savedActivities = JSON.parse(localStorage.getItem("savedActivities"));
+
       if (savedActivities) {
         for (const time in savedActivities) {
-          if (!document.getElementById(`timeSlot-${time}`)) {
-            addTimeSlot(); // Ensure the slot exists before adding activities
-          }
           const timeSlot = document.getElementById(`timeSlot-${time}`);
-          timeSlot.style.backgroundColor = savedActivities[time].color || "white"; // Default to white if no color saved
-          document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff"; // Set color picker value
+          timeSlot.style.backgroundColor = savedActivities[time].color || "white";
+          document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff";
           savedActivities[time].activities.forEach(activity => addActivity(time, activity));
         }
       }
@@ -282,16 +352,24 @@
 
     document.addEventListener("DOMContentLoaded", loadActivities);
 
-    // Event delegation to handle color picker clicks and keep them open
-    document.body.addEventListener("click", function (event) {
-      if (event.target.matches('input[type="color"]')) {
-        event.target.classList.add('show');
-      } else {
-        document.querySelectorAll('input[type="color"]').forEach(colorPicker => {
-          colorPicker.classList.remove('show');
-        });
-      }
-    });
+    function toggleSettingsMenu() {
+      const settingsMenu = document.getElementById("settingsMenu");
+      settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
+    }
+
+    function changeFont() {
+      const fontSelect = document.getElementById("fontSelect");
+      document.body.style.fontFamily = fontSelect.value;
+    }
+
+    function changeFontSize() {
+      const fontSizeRange = document.getElementById("fontSizeRange");
+      document.body.style.fontSize = fontSizeRange.value + "px";
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
   </script>
 </body>
 
