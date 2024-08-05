@@ -2,6 +2,9 @@
 <html>
 <head>
   <title>Routine Planner</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     html {
       height: 100%;
@@ -52,6 +55,12 @@
       position: absolute;
       top: 5px;
       right: 5px;
+      cursor: pointer; /* Add cursor pointer for hover */
+    }
+
+    .time-slot input[type="color"]:hover {
+      transform: scale(1.1); /* Make the color selector slightly larger on hover */
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow on hover */
     }
 
     .time-slot.work {
@@ -115,11 +124,9 @@
       background-color: #f44336;
       color: white;
       cursor: pointer;
-      display: none; /* Initially hidden */
-    }
-
-    li:hover button {
-      display: block; /* Show on hover */
+      /* Remove display: none */
+      /* Remove display: block */
+      font-size: 1.2em; /* Make the icon a bit larger */
     }
 
     .add-time-slot {
@@ -180,7 +187,7 @@
         const newActivity = document.createElement("li");
         newActivity.innerHTML = `
           <span>${activityValue}</span>
-          <button onclick="deleteActivity(this)">Delete</button>
+          <button onclick="deleteActivity(this)"><i class="fas fa-trash"></i></button>
         `;
         activitiesList.appendChild(newActivity);
         activityInput.value = ""; // Clear the input field
