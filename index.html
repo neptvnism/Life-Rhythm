@@ -3,121 +3,150 @@
 <head>
   <title>Routine Planner</title>
   <style>
+    html {
+      height: 100%;
+      width: 100%;
+    }
+
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
       margin: 0;
-      padding: 20px;
-      background-color: #f2f2f2;
+      background-color: #f0f0f0;
     }
 
     h1 {
-      text-align: center;
       margin-bottom: 20px;
+      text-align: center;
       color: #333;
     }
 
     .container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
     }
 
     .time-slot {
-      border: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
       border-radius: 5px;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      position: relative;
+      background-color: #eee;
+      position: relative; /* To position the color input and delete button */
+    }
+
+    .time-slot input[type="color"] {
+      position: absolute;
+      top: 5px;
+      right: 5px;
     }
 
     .time-slot.work {
-      background-color: #f0f0f0;
+      background-color: #f2f2f2;
     }
 
     .time-slot.break {
-      background-color: #e0ffff;
+      background-color: #e0e0e0;
     }
 
     .time {
       font-weight: bold;
-      margin-bottom: 10px;
-      color: #333;
     }
 
     .input-group {
       display: flex;
-      gap: 10px;
-      align-items: center;
     }
 
-    .input-group input {
-      flex: 1;
-      padding: 8px;
+    .input-group input[type="text"] {
+      padding: 5px;
+      margin-right: 10px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 3px;
+      flex-grow: 1;
     }
 
     .input-group button {
-      background-color: #007bff;
-      color: white;
-      padding: 8px 15px;
+      padding: 5px 10px;
       border: none;
-      border-radius: 5px;
+      border-radius: 3px;
+      background-color: #4CAF50;
+      color: white;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .input-group button:hover {
-      background-color: #0056b3;
     }
 
     ul {
       list-style: none;
       padding: 0;
+      margin-top: 10px;
     }
 
     li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px;
       margin-bottom: 5px;
-      position: relative;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background-color: #fff;
+    }
+
+    li span {
+      flex-grow: 1;
     }
 
     li button {
-      position: absolute;
-      right: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: #dc3545;
-      color: white;
-      border: none;
       padding: 5px 10px;
-      border-radius: 5px;
+      border: none;
+      border-radius: 3px;
+      background-color: #f44336;
+      color: white;
       cursor: pointer;
-      font-size: 12px;
-      transition: background-color 0.3s;
+      display: none; /* Initially hidden */
     }
 
-    li button:hover {
-      background-color: #c82333;
+    li:hover button {
+      display: block; /* Show on hover */
     }
 
     .add-time-slot {
-      text-align: center;
+      display: flex;
+      justify-content: center;
       margin-top: 20px;
     }
 
     .add-time-slot button {
-      background-color: #007bff;
-      color: white;
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
+      background-color: #008CBA;
+      color: white;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
-    .add-time-slot button:hover {
-      background-color: #0056b3;
+    /* Delete buttons initially hidden */
+    li button,
+    .time-slot button {
+      display: none;
+    }
+
+    /* Show delete buttons on hover */
+    li:hover button,
+    .time-slot:hover button {
+      display: block;
     }
   </style>
 </head>
@@ -126,70 +155,43 @@
   <div class="container">
     <div class="time-slot work" id="timeSlot-8am">
       <span class="time" id="time-8am">8:00 AM</span>
+      <input type="color" id="color-8am" onchange="changeSlotColor('8am')">
       <div class="input-group">
         <input type="text" id="activity-8am" placeholder="Activity">
         <button onclick="addActivity('8am')">Add</button>
       </div>
       <ul id="activities-8am"></ul>
-    </div>
-    <div class="time-slot break" id="timeSlot-9am">
-      <span class="time" id="time-9am">9:00 AM</span>
-      <div class="input-group">
-        <input type="text" id="activity-9am" placeholder="Activity">
-        <button onclick="addActivity('9am')">Add</button>
-      </div>
-      <ul id="activities-9am"></ul>
-    </div>
-    <div class="time-slot work" id="timeSlot-10am">
-      <span class="time" id="time-10am">10:00 AM</span>
-      <div class="input-group">
-        <input type="text" id="activity-10am" placeholder="Activity">
-        <button onclick="addActivity('10am')">Add</button>
-      </div>
-      <ul id="activities-10am"></ul>
-    </div>
-    <div class="time-slot break" id="timeSlot-11am">
-      <span class="time" id="time-11am">11:00 AM</span>
-      <div class="input-group">
-        <input type="text" id="activity-11am" placeholder="Activity">
-        <button onclick="addActivity('11am')">Add</button>
-      </div>
-      <ul id="activities-11am"></ul>
-    </div>
-    <div class="time-slot work" id="timeSlot-12pm">
-      <span class="time" id="time-12pm">12:00 PM</span>
-      <div class="input-group">
-        <input type="text" id="activity-12pm" placeholder="Activity">
-        <button onclick="addActivity('12pm')">Add</button>
-      </div>
-      <ul id="activities-12pm"></ul>
+      <button onclick="deleteTimeSlot('8am')">Delete Time Slot</button>
     </div>
     <div class="add-time-slot">
       <button onclick="addTimeSlot()">Add Time Slot</button>
     </div>
   </div>
+
   <script>
     let timeSlotCounter = 5; // Keep track of time slot IDs
 
     function addActivity(time) {
       const activityInput = document.getElementById(`activity-${time}`);
-      const activityList = document.getElementById(`activities-${time}`);
-      const newActivity = activityInput.value;
+      const activityValue = activityInput.value.trim();
 
-      if (newActivity !== "") {
-        const listItem = document.createElement("li");
-        listItem.textContent = newActivity;
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener('click', () => {
-          activityList.removeChild(listItem);
-          saveActivities();
-        });
-        listItem.appendChild(deleteButton);
-        activityList.appendChild(listItem);
-        activityInput.value = "";
+      if (activityValue !== "") {
+        const activitiesList = document.getElementById(`activities-${time}`);
+        const newActivity = document.createElement("li");
+        newActivity.innerHTML = `
+          <span>${activityValue}</span>
+          <button onclick="deleteActivity(this)">Delete</button>
+        `;
+        activitiesList.appendChild(newActivity);
+        activityInput.value = ""; // Clear the input field
         saveActivities();
       }
+    }
+
+    function deleteActivity(button) {
+      const activityItem = button.parentElement;
+      activityItem.remove();
+      saveActivities();
     }
 
     function addTimeSlot() {
@@ -199,15 +201,14 @@
       newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
       newTimeSlot.innerHTML = `
         <span class="time" id="time-${timeSlotCounter}">Time Slot ${timeSlotCounter}</span>
+        <input type="color" id="color-${timeSlotCounter}" onchange="changeSlotColor('${timeSlotCounter}')">
         <div class="input-group">
           <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
           <button onclick="addActivity('${timeSlotCounter}')">Add</button>
         </div>
         <ul id="activities-${timeSlotCounter}"></ul>
+        <button onclick="deleteTimeSlot('${timeSlotCounter}')">Delete Time Slot</button>
       `;
-      const container = document.querySelector(".container");
-      container.insertBefore(newTimeSlot, container.lastElementChild);
-      saveActivities();
 
       // Make the time editable
       const timeSpan = newTimeSlot.querySelector('.time');
@@ -215,37 +216,52 @@
       timeSpan.addEventListener('blur', () => {
         saveActivities(); // Save the updated time when focus is lost
       });
+
+      const container = document.querySelector(".container");
+      container.insertBefore(newTimeSlot, container.lastElementChild);
+      saveActivities();
+    }
+
+    function changeSlotColor(time) {
+      const timeSlot = document.getElementById(`timeSlot-${time}`);
+      const colorInput = document.getElementById(`color-${time}`);
+      timeSlot.style.backgroundColor = colorInput.value;
+      saveActivities();
+    }
+
+    function deleteTimeSlot(time) {
+      const timeSlot = document.getElementById(`timeSlot-${time}`);
+      timeSlot.remove();
+      saveActivities();
     }
 
     function saveActivities() {
-      const activities = {};
-      const timeSlots = ['8am', '9am', '10am', '11am', '12pm'];
-      timeSlots.forEach(time => {
-        const activityList = document.getElementById(`activities-${time}`);
-        activities[time] = Array.from(activityList.children).map(item => item.textContent);
+      const activitiesData = {};
+      const timeSlots = document.querySelectorAll(".time-slot");
+
+      timeSlots.forEach(timeSlot => {
+        const time = timeSlot.id.replace("timeSlot-", "");
+        activitiesData[time] = {
+          color: document.getElementById(`color-${time}`).value,
+          activities: Array.from(timeSlot.querySelector("ul").children).map(li => li.textContent.trim())
+        };
       });
-      localStorage.setItem('routine', JSON.stringify(activities));
+
+      localStorage.setItem("routineActivities", JSON.stringify(activitiesData));
     }
 
     function loadActivities() {
-      const storedActivities = JSON.parse(localStorage.getItem('routine'));
-      if (storedActivities) {
-        const timeSlots = ['8am', '9am', '10am', '11am', '12pm'];
-        timeSlots.forEach(time => {
-          const activityList = document.getElementById(`activities-${time}`);
-          storedActivities[time].forEach(activity => {
-            const listItem = document.createElement("li");
-            listItem.textContent = activity;
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Delete";
-            deleteButton.addEventListener('click', () => {
-              activityList.removeChild(listItem);
-              saveActivities();
+      const savedActivities = JSON.parse(localStorage.getItem("routineActivities"));
+      if (savedActivities) {
+        for (const time in savedActivities) {
+          const timeSlot = document.getElementById(`timeSlot-${time}`);
+          if (timeSlot) {
+            timeSlot.style.backgroundColor = savedActivities[time].color;
+            savedActivities[time].activities.forEach(activity => {
+              addActivity(time, activity);
             });
-            listItem.appendChild(deleteButton);
-            activityList.appendChild(listItem);
-          });
-        });
+          }
+        }
       }
     }
 
