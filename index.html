@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Routine Planner</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -35,8 +36,9 @@
       margin: 0 auto;
       padding: 20px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 10px;
       background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .time-slot {
@@ -45,19 +47,22 @@
       padding: 10px;
       margin-bottom: 10px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #eee;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       position: relative; /* To position the color input and delete button */
     }
 
     .time-slot input[type="color"] {
+      display: none;
       position: absolute;
       top: 5px;
       right: 5px;
       cursor: pointer; /* Add cursor pointer for hover */
     }
 
-    .time-slot input[type="color"]:hover {
+    .time-slot:hover input[type="color"] {
+      display: block;
       transform: scale(1.1); /* Make the color selector slightly larger on hover */
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow on hover */
     }
@@ -109,8 +114,9 @@
       padding: 5px;
       margin-bottom: 5px;
       border: 1px solid #ccc;
-      border-radius: 3px;
+      border-radius: 10px;
       background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     li span {
@@ -120,7 +126,7 @@
     li button {
       padding: 5px 10px;
       border: none;
-      border-radius: 3px;
+      border-radius: 5px;
       background-color: #f44336;
       color: white;
       cursor: pointer;
@@ -136,10 +142,11 @@
     .add-time-slot button {
       padding: 10px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       background-color: #008CBA;
       color: white;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     /* Delete buttons initially hidden */
@@ -155,12 +162,13 @@
     }
   </style>
 </head>
+
 <body>
   <h1>My Daily Routine</h1>
   <div class="container">
     <div class="time-slot work" id="timeSlot-8am">
       <span class="time" id="time-8am">8:00 AM</span>
-      <input type="color" id="color-8am" onchange="changeSlotColor('8am')">
+      <input type="color" id="color-8am" onchange="changeSlotColor('8am')" value="#ffffff">
       <div class="input-group">
         <input type="text" id="activity-8am" placeholder="Activity">
         <button onclick="addActivity('8am')">Add</button>
@@ -208,7 +216,7 @@
       newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
       newTimeSlot.innerHTML = `
         <span class="time" id="time-${timeSlotCounter}" contenteditable="true">Time Slot ${timeSlotCounter}</span>
-        <input type="color" id="color-${timeSlotCounter}" onchange="changeSlotColor('${timeSlotCounter}')">
+        <input type="color" id="color-${timeSlotCounter}" onchange="changeSlotColor('${timeSlotCounter}')" value="#ffffff">
         <div class="input-group">
           <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
           <button onclick="addActivity('${timeSlotCounter}')">Add</button>
@@ -216,6 +224,8 @@
         <ul id="activities-${timeSlotCounter}"></ul>
         <button onclick="deleteTimeSlot('${timeSlotCounter}')">Delete Time Slot</button>
       `;
+
+      newTimeSlot.style.backgroundColor = "white"; // Default background color to white
 
       const container = document.querySelector(".container");
       container.insertBefore(newTimeSlot, container.lastElementChild);
@@ -259,17 +269,16 @@
           }
           const timeSlot = document.getElementById(`timeSlot-${time}`);
           if (timeSlot) {
-            timeSlot.style.backgroundColor = savedActivities[time].color;
-            savedActivities[time].activities.forEach(activity => {
-              addActivity(time, activity);
-            });
+            timeSlot.style.backgroundColor = savedActivities[time].color || "white"; // Default to white if no color saved
+            document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff"; // Set color picker value
+            savedActivities[time].activities.forEach(activity => addActivity(time, activity));
           }
         }
       }
     }
 
-    // Load activities on page load
-    loadActivities();
+    document.addEventListener("DOMContentLoaded", loadActivities);
   </script>
 </body>
+
 </html>
