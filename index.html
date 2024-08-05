@@ -21,13 +21,14 @@
       height: 100%;
       margin: 0;
       background-color: #f0f0f0;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     h1 {
       margin-bottom: 20px;
       text-align: center;
       color: #333;
+      transition: color 0.3s;
     }
 
     .settings-icon {
@@ -73,6 +74,7 @@
       border-radius: 10px;
       background-color: #fff;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .time-slot {
@@ -85,6 +87,7 @@
       background-color: white;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       position: relative;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .time-slot input[type="color"] {
@@ -144,6 +147,7 @@
       border-radius: 10px;
       background-color: #fff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     li span {
@@ -198,12 +202,56 @@
       font-family: 'Arial Rounded', sans-serif;
     }
 
-    .time-slot:hover button {
+    .time-slot:hover button,
+    .time-slot:hover .input-group,
+    .time-slot:hover .rename-group {
       display: block;
     }
 
-    .time-slot:hover .input-group {
-      display: flex;
+    .rename-group {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .rename-group input[type="text"] {
+      padding: 5px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      flex-grow: 1;
+      font-family: 'Arial Rounded', sans-serif;
+    }
+
+    .rename-group button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      background-color: #008CBA;
+      color: white;
+      cursor: pointer;
+      font-family: 'Arial Rounded', sans-serif;
+    }
+
+    .dark-mode {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    .dark-mode .container,
+    .dark-mode .time-slot,
+    .dark-mode li {
+      background-color: #444;
+      color: #ddd;
+      border-color: #555;
+    }
+
+    .dark-mode .settings-menu {
+      background-color: #555;
+      border-color: #666;
+    }
+
+    .dark-mode h1 {
+      color: #ddd;
     }
   </style>
 </head>
@@ -228,42 +276,22 @@
   </div>
   <h1>My Daily Routine</h1>
   <div class="container">
-    <div class="time-slot work" id="timeSlot-8am">
-      <span class="time" id="time-8am">8:00 AM</span>
-      <input type="color" id="color-8am" onchange="changeSlotColor('8am')" value="#ffffff">
-      <div class="input-group">
-        <input type="text" id="activity-8am" placeholder="Activity">
-        <button onclick="addActivity('8am')">Add</button>
-      </div>
-      <ul id="activities-8am"></ul>
-      <button onclick="deleteTimeSlot('8am')">Delete Time Slot</button>
-    </div>
     <div class="add-time-slot">
       <button onclick="addTimeSlot()">Add Time Slot</button>
     </div>
   </div>
 
   <script>
-    let timeSlotCounter = 5;
+    let timeSlotCounter = 1;
 
-    document.addEventListener("click", function (event) {
-      const colorPickers = document.querySelectorAll('input[type="color"]');
-      colorPickers.forEach(colorPicker => {
-        if (colorPicker !== event.target) {
-          colorPicker.classList.remove('show');
-        }
-      });
-    });
-
-    function addActivity(time, activityValue = null) {
+    function addActivity(time) {
       const activityInput = document.getElementById(`activity-${time}`);
-      const activity = activityValue || activityInput.value.trim();
+      const activitiesList = document.getElementById(`activities-${time}`);
 
-      if (activity !== "") {
-        const activitiesList = document.getElementById(`activities-${time}`);
+      if (activityInput.value.trim() !== "") {
         const newActivity = document.createElement("li");
         newActivity.innerHTML = `
-          <span>${activity}</span>
+          <span>${activityInput.value}</span>
           <button class="complete" onclick="completeActivity(this)"><i class="fa fa-check"></i></button>
           <button onclick="deleteActivity(this)"><i class="fa fa-trash"></i></button>
         `;
@@ -294,7 +322,11 @@
       newTimeSlot.id = time;
       newTimeSlot.innerHTML = `
         <span class="time" id="time-${time}">New Time Slot</span>
-        <input type="color" id="color-${time}" onchange="changeSlotColor('${time}')" value="#ffffff">
+        <input type="color" id="color-${time}" onchange="changeSlotColor('${time}')" value="#ffffff" class="show">
+        <div class="rename-group">
+          <input type="text" id="rename-${time}" placeholder="Rename Slot">
+          <button onclick="renameSlot('${time}')">Rename</button>
+        </div>
         <div class="input-group">
           <input type="text" id="activity-${time}" placeholder="Activity">
           <button onclick="addActivity('${time}')">Add</button>
@@ -312,10 +344,17 @@
       saveActivities();
     }
 
+    function renameSlot(time) {
+      const renameInput = document.getElementById(`rename-${time}`);
+      const timeLabel = document.getElementById(`time-${time}`);
+      timeLabel.textContent = renameInput.value || "New Time Slot";
+    }
+
     function changeSlotColor(time) {
       const colorPicker = document.getElementById(`color-${time}`);
       const timeSlot = document.getElementById(time);
       timeSlot.style.backgroundColor = colorPicker.value;
+      colorPicker.classList.remove("show");
       saveActivities();
     }
 
@@ -342,6 +381,7 @@
 
       if (savedActivities) {
         for (const time in savedActivities) {
+          addTimeSlot();
           const timeSlot = document.getElementById(`timeSlot-${time}`);
           timeSlot.style.backgroundColor = savedActivities[time].color || "white";
           document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff";
