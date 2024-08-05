@@ -44,7 +44,7 @@
     .time-slot {
       display: flex;
       flex-direction: column;
-      padding: 10px;
+      padding: 20px; /* Added more padding around text */
       margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -61,18 +61,8 @@
       cursor: pointer; /* Add cursor pointer for hover */
     }
 
-    .time-slot:hover input[type="color"] {
+    .time-slot input[type="color"].show {
       display: block;
-      transform: scale(1.1); /* Make the color selector slightly larger on hover */
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow on hover */
-    }
-
-    .time-slot.work {
-      background-color: #f2f2f2;
-    }
-
-    .time-slot.break {
-      background-color: #e0e0e0;
     }
 
     .time {
@@ -80,7 +70,8 @@
     }
 
     .input-group {
-      display: flex;
+      display: none;
+      margin-top: 10px;
     }
 
     .input-group input[type="text"] {
@@ -111,7 +102,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 5px;
+      padding: 10px; /* Added more padding around text */
       margin-bottom: 5px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -160,6 +151,11 @@
     .time-slot:hover button {
       display: block;
     }
+
+    /* Show input group on hover */
+    .time-slot:hover .input-group {
+      display: flex;
+    }
   </style>
 </head>
 
@@ -183,6 +179,15 @@
 
   <script>
     let timeSlotCounter = 5; // Keep track of time slot IDs
+
+    document.addEventListener("click", function (event) {
+      const colorPickers = document.querySelectorAll('input[type="color"]');
+      colorPickers.forEach(colorPicker => {
+        if (colorPicker !== event.target) {
+          colorPicker.classList.remove('show');
+        }
+      });
+    });
 
     function addActivity(time, activityValue = null) {
       const activityInput = document.getElementById(`activity-${time}`);
@@ -268,16 +273,25 @@
             addTimeSlot(); // Ensure the slot exists before adding activities
           }
           const timeSlot = document.getElementById(`timeSlot-${time}`);
-          if (timeSlot) {
-            timeSlot.style.backgroundColor = savedActivities[time].color || "white"; // Default to white if no color saved
-            document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff"; // Set color picker value
-            savedActivities[time].activities.forEach(activity => addActivity(time, activity));
-          }
+          timeSlot.style.backgroundColor = savedActivities[time].color || "white"; // Default to white if no color saved
+          document.getElementById(`color-${time}`).value = savedActivities[time].color || "#ffffff"; // Set color picker value
+          savedActivities[time].activities.forEach(activity => addActivity(time, activity));
         }
       }
     }
 
     document.addEventListener("DOMContentLoaded", loadActivities);
+
+    // Event delegation to handle color picker clicks and keep them open
+    document.body.addEventListener("click", function (event) {
+      if (event.target.matches('input[type="color"]')) {
+        event.target.classList.add('show');
+      } else {
+        document.querySelectorAll('input[type="color"]').forEach(colorPicker => {
+          colorPicker.classList.remove('show');
+        });
+      }
+    });
   </script>
 </body>
 
