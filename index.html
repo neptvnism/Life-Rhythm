@@ -41,8 +41,7 @@
 
     .time-slot {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       padding: 10px;
       margin-bottom: 10px;
       border: 1px solid #ccc;
@@ -100,6 +99,7 @@
       list-style: none;
       padding: 0;
       margin-top: 10px;
+      display: block;
     }
 
     li {
@@ -124,8 +124,6 @@
       background-color: #f44336;
       color: white;
       cursor: pointer;
-      /* Remove display: none */
-      /* Remove display: block */
       font-size: 1.2em; /* Make the icon a bit larger */
     }
 
@@ -178,19 +176,21 @@
   <script>
     let timeSlotCounter = 5; // Keep track of time slot IDs
 
-    function addActivity(time) {
+    function addActivity(time, activityValue = null) {
       const activityInput = document.getElementById(`activity-${time}`);
-      const activityValue = activityInput.value.trim();
+      const activity = activityValue || activityInput.value.trim();
 
-      if (activityValue !== "") {
+      if (activity !== "") {
         const activitiesList = document.getElementById(`activities-${time}`);
         const newActivity = document.createElement("li");
         newActivity.innerHTML = `
-          <span>${activityValue}</span>
+          <span>${activity}</span>
           <button onclick="deleteActivity(this)"><i class="fas fa-trash"></i></button>
         `;
         activitiesList.appendChild(newActivity);
-        activityInput.value = ""; // Clear the input field
+        if (!activityValue) {
+          activityInput.value = ""; // Clear the input field if not loading from storage
+        }
         saveActivities();
       }
     }
@@ -207,7 +207,7 @@
       newTimeSlot.classList.add("time-slot");
       newTimeSlot.setAttribute("id", `timeSlot-${timeSlotCounter}`);
       newTimeSlot.innerHTML = `
-        <span class="time" id="time-${timeSlotCounter}">Time Slot ${timeSlotCounter}</span>
+        <span class="time" id="time-${timeSlotCounter}" contenteditable="true">Time Slot ${timeSlotCounter}</span>
         <input type="color" id="color-${timeSlotCounter}" onchange="changeSlotColor('${timeSlotCounter}')">
         <div class="input-group">
           <input type="text" id="activity-${timeSlotCounter}" placeholder="Activity">
@@ -216,13 +216,6 @@
         <ul id="activities-${timeSlotCounter}"></ul>
         <button onclick="deleteTimeSlot('${timeSlotCounter}')">Delete Time Slot</button>
       `;
-
-      // Make the time editable
-      const timeSpan = newTimeSlot.querySelector('.time');
-      timeSpan.contentEditable = true;
-      timeSpan.addEventListener('blur', () => {
-        saveActivities(); // Save the updated time when focus is lost
-      });
 
       const container = document.querySelector(".container");
       container.insertBefore(newTimeSlot, container.lastElementChild);
@@ -261,6 +254,9 @@
       const savedActivities = JSON.parse(localStorage.getItem("routineActivities"));
       if (savedActivities) {
         for (const time in savedActivities) {
+          if (!document.getElementById(`timeSlot-${time}`)) {
+            addTimeSlot(); // Ensure the slot exists before adding activities
+          }
           const timeSlot = document.getElementById(`timeSlot-${time}`);
           if (timeSlot) {
             timeSlot.style.backgroundColor = savedActivities[time].color;
